@@ -1,0 +1,6 @@
+{
+  "name": "openclaw-session-bridge-plugin",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "index.ts"
+}

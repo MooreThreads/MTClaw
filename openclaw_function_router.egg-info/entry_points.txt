@@ -1,0 +1,2 @@
+[console_scripts]
+function-router = function_router.server:main
