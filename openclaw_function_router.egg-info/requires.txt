@@ -1,8 +1,0 @@
-fastapi>=0.100
-uvicorn>=0.20
-httpx>=0.24
-
-[test]
-pytest
-pytest-asyncio
-httpx
