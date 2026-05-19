@@ -2,6 +2,10 @@
 
 [简体中文](README.md) | English
 
+<p align="center">
+  <video src="https://github.com/MooreThreads/MTClaw/raw/main/demo/FR1_FR2_side_by_side.mp4" controls width="100%"></video>
+</p>
+
 > An OpenAI-compatible Function Router Provider for vertical-domain acceleration with custom tools, while preserving the general capability of your upstream LLM.
 
 OpenClaw Function Router is an OpenAI-compatible **model provider / provider proxy**. Any client, agent framework, gateway, IDE, or evaluation system that can call an OpenAI-compatible `base_url` can use this repository as a drop-in provider endpoint.

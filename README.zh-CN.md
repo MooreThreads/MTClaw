@@ -2,6 +2,10 @@
 
 [English](README.en.md) | 简体中文
 
+<p align="center">
+  <video src="https://github.com/MooreThreads/MTClaw/raw/main/demo/FR1_FR2_side_by_side.mp4" controls width="100%"></video>
+</p>
+
 > OpenAI-compatible Function Router Provider：通过自定义工具实现垂类加速，同时保留上游 LLM 的通用能力。
 
 OpenClaw Function Router 是一个 OpenAI-compatible 的 **模型 Provider / Provider Proxy**。任何可以配置 OpenAI-compatible `base_url` 的客户端、Agent 框架、网关、IDE 或评测系统，都可以把本仓库作为可直接接入的 Provider endpoint 使用。
