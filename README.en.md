@@ -261,7 +261,17 @@ This mode uses the **session-bridge plugin** shipped in `plugins/session-bridge/
 
 **If you used `scripts/install.sh`**, the plugin is already installed and registered — no extra steps needed.
 
-**Manual install** (if you didn't use the installer):
+**Option 1 — Install from ClawHub (recommended)**
+
+The plugin is published to ClawHub. OpenClaw users can install it with a single command:
+
+```bash
+openclaw plugins install clawhub:openclaw-session-bridge-plugin
+```
+
+OpenClaw validates the plugin's compatibility (`pluginApi >= 2026.3.24`) and loads it into your workspace — no manual file copying or `openclaw.json` editing required. Package page: <https://clawhub.ai/packages/openclaw-session-bridge-plugin>
+
+**Option 2 — Copy from the repo manually**
 
 ```bash
 # Copy plugin to OpenClaw global extensions directory (must be a real copy, not a symlink)

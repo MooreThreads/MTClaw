@@ -262,7 +262,17 @@ curl -s http://127.0.0.1:18790/health | jq .
 
 如果你使用了 `scripts/install.sh`，插件已经被安装和注册，无需额外操作。
 
-手动安装方式：
+**方式 1 — 从 ClawHub 安装（推荐）**
+
+插件已发布到 ClawHub，OpenClaw 用户一行命令即可安装：
+
+```bash
+openclaw plugins install clawhub:openclaw-session-bridge-plugin
+```
+
+OpenClaw 会自动校验 plugin 兼容性（`pluginApi >= 2026.3.24`）并加载，无需手动拷贝文件或编辑 `openclaw.json`。包页面：<https://clawhub.ai/packages/openclaw-session-bridge-plugin>
+
+**方式 2 — 从仓库手动复制**
 
 ```bash
 cp -r plugins/session-bridge ~/.openclaw/extensions/session-bridge
