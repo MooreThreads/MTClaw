@@ -1,7 +1,7 @@
 {
   "name": "openclaw-session-bridge-plugin",
   "version": "0.2.0",
-  "description": "Up to 7x faster vertical-domain tool calls in OpenClaw via MTClaw Function Router (100% Pass@1, 6.85x permissive). This plugin forwards OpenClaw session id to the router so per-session tool history works correctly.",
+  "description": "Tool-call acceleration for OpenClaw via MTClaw Function Router — up to 7x faster vertical-domain tool calls (100% Pass@1, 6.85x permissive mode). Forwards the OpenClaw session id to the router so per-session tool history works correctly. | 基于 MTClaw Function Router 的 OpenClaw 工具调用加速插件，定制领域工具调用最高加速 7 倍（严格模式 100% Pass@1，宽松模式 6.85 倍）。本插件将 OpenClaw session id 转发给 router，保证按会话隔离的工具历史正常工作。",
   "type": "module",
   "main": "index.ts",
   "license": "MIT",
@@ -15,12 +15,21 @@
     "openclaw",
     "plugin",
     "function-router",
+    "acceleration",
     "tool-call-acceleration",
+    "speedup",
+    "latency",
+    "fast",
     "vertical-domain",
     "agent-latency",
     "provider-proxy",
     "session-bridge",
-    "mtclaw"
+    "mtclaw",
+    "加速",
+    "工具调用加速",
+    "垂类加速",
+    "函数路由",
+    "插件"
   ],
   "openclaw": {
     "compat": {
