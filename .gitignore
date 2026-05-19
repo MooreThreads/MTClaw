@@ -3,6 +3,8 @@
 build/
 dist/
 *.egg
+# Allow compiled plugin output to be tracked (needed for ClawHub publish)
+!plugins/*/dist/
 
 # Bytecode / caches
 __pycache__/
