@@ -32,11 +32,17 @@
     "插件"
   ],
   "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ],
+    "providers": [
+      "function_router"
+    ],
     "compat": {
-      "pluginApi": "1"
+      "pluginApi": ">=2026.3.24"
     },
     "build": {
-      "openclawVersion": ">=2026.3.24"
+      "openclawVersion": "2026.3.24"
     }
   }
 }
