@@ -2,9 +2,9 @@
 
 [简体中文](README.md) | English
 
-<p align="center">
-  <video src="https://github.com/MooreThreads/MTClaw/raw/main/demo/FR1_FR2_side_by_side.mp4" controls width="100%"></video>
-</p>
+## Demo
+
+https://github.com/user-attachments/assets/2ee2a195-fa7f-4be1-a14c-ecdc53bbc83a
 
 > An OpenAI-compatible Function Router Provider for vertical-domain acceleration with custom tools, while preserving the general capability of your upstream LLM.
 

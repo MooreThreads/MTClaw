@@ -2,9 +2,9 @@
 
 [English](README.en.md) | 简体中文
 
-<p align="center">
-  <video src="https://github.com/MooreThreads/MTClaw/raw/main/demo/FR1_FR2_side_by_side.mp4" controls width="100%"></video>
-</p>
+## 演示
+
+https://github.com/user-attachments/assets/2ee2a195-fa7f-4be1-a14c-ecdc53bbc83a
 
 > OpenAI-compatible Function Router Provider：通过自定义工具实现垂类加速，同时保留上游 LLM 的通用能力。
 
