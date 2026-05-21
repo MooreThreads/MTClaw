@@ -238,6 +238,8 @@ curl -s http://127.0.0.1:18790/health | jq .
 
 `tools_loaded` 应该增加。更详细的测试步骤和部署 checklist 见 [docs/adding-tools.md](docs/adding-tools.md)。
 
+如果你已经有一个现成的 script-backed skill，希望直接转换成 Function Router 可加载的工具配置，可以使用内置的 `skill-to-fc` skill。它会辅助生成 `functions.jsonl` 条目和匹配的 wrapper 脚本，并安装到 `~/.function-router`。安装和使用方式见 [skill-to-fc 使用指南](docs/skill-to-fc.md)。
+
 ## OpenClaw 集成说明
 
 即使不 patch OpenClaw，Function Router 也可以作为普通 OpenAI-compatible provider 工作，但有一个重要限制：
