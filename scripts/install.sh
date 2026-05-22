@@ -40,6 +40,110 @@ prompt_required() {
   done
 }
 
+probe_model_endpoint() {
+  local label="$1"
+  local base_url="$2"
+  local api_key="$3"
+  local model="$4"
+  local with_tools="$5"
+  local output
+  output=$(LABEL="$label" BASE_URL="$base_url" API_KEY="$api_key" MODEL="$model" WITH_TOOLS="$with_tools" python3 - <<'PY'
+import json
+import os
+import re
+import socket
+import sys
+import urllib.error
+import urllib.request
+
+base_url = os.environ["BASE_URL"].rstrip("/")
+raw_key = os.environ["API_KEY"]
+model = os.environ["MODEL"]
+with_tools = os.environ["WITH_TOOLS"] == "1"
+
+m = re.fullmatch(r"\$\{([A-Z_][A-Z0-9_]*)\}", raw_key)
+if m:
+    resolved = os.environ.get(m.group(1))
+    if resolved is None:
+        sys.stderr.write(f"warning: API key references {raw_key} but it is not set in this shell\n")
+        key = raw_key
+    else:
+        key = resolved
+elif raw_key == "" or raw_key.lower() == "any":
+    key = "any"
+else:
+    key = raw_key
+
+url = f"{base_url}/chat/completions"
+body = {
+    "model": model,
+    "messages": [{"role": "user", "content": "ping"}],
+    "max_tokens": 1,
+}
+if with_tools:
+    body["tools"] = [{
+        "type": "function",
+        "function": {
+            "name": "ping",
+            "description": "connectivity probe",
+            "parameters": {"type": "object", "properties": {}},
+        },
+    }]
+
+req = urllib.request.Request(
+    url,
+    data=json.dumps(body).encode("utf-8"),
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {key}",
+    },
+    method="POST",
+)
+
+def emit(status, detail):
+    print(f"{status}\t{url}\t{detail}")
+
+try:
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        code = resp.getcode()
+        raw = resp.read(2048).decode("utf-8", errors="replace")
+        if 200 <= code < 300:
+            emit("OK", model)
+            sys.exit(0)
+        emit("FAIL", f"HTTP {code}: {raw[:200]}")
+        sys.exit(1)
+except urllib.error.HTTPError as e:
+    raw = ""
+    try:
+        raw = e.read(2048).decode("utf-8", errors="replace")
+    except Exception:
+        pass
+    emit("FAIL", f"HTTP {e.code}: {raw[:200]}")
+    sys.exit(1)
+except socket.timeout:
+    emit("FAIL", "Timed out after 10s")
+    sys.exit(1)
+except urllib.error.URLError as e:
+    emit("FAIL", f"Connection error: {e.reason!r}")
+    sys.exit(1)
+except Exception as e:
+    emit("FAIL", f"Unexpected error: {e!r}")
+    sys.exit(1)
+PY
+)
+  local probe_exit=$?
+  local status_field url_field detail_field
+  IFS=$'\t' read -r status_field url_field detail_field <<< "$output"
+  if [ "$probe_exit" -eq 0 ] && [ "$status_field" = "OK" ]; then
+    printf '  \u2713 %s model reachable: %s\n' "$label" "$detail_field"
+    return 0
+  fi
+  printf '  \u2717 %s model check failed:\n' "$label"
+  printf '      URL: %s\n' "$url_field"
+  printf '      %s\n' "$detail_field"
+  return 1
+}
+
 prompt_yes_no() {
   local prompt_en="$1"
   local prompt_zh="$2"
@@ -266,6 +370,24 @@ echo "  那这里就应填写包含 wallpaper-control/ 的目录。"
 echo "  示例值: /home/mt/tools"
 TOOLS_BASE_DIR=$(prompt_default "  Tools base directory" "  工具根目录" "$HOME/.function-router/scripts")
 OPENCLAW_CONFIG=$(prompt_default "  OpenClaw config path" "  OpenClaw 配置路径" "$DEFAULT_OPENCLAW_CONFIG")
+
+echo
+echo "── Verifying model endpoints / 验证模型连通性 ──"
+ROUTING_OK=1
+UPSTREAM_OK=1
+probe_model_endpoint "Routing" "$ROUTING_BASE_URL" "$ROUTING_API_KEY" "$ROUTING_MODEL" 1 || ROUTING_OK=0
+probe_model_endpoint "Upstream" "$UPSTREAM_BASE_URL" "$UPSTREAM_API_KEY" "$UPSTREAM_MODEL" 0 || UPSTREAM_OK=0
+
+if [ "$ROUTING_OK" -ne 1 ] || [ "$UPSTREAM_OK" -ne 1 ]; then
+  echo
+  CONTINUE_ANYWAY=$(prompt_yes_no "One or more model checks failed. Continue install anyway?" "一个或多个模型检测失败，是否仍要继续安装？" "N")
+  if [ "$CONTINUE_ANYWAY" != "yes" ]; then
+    echo "Aborted. No files were modified."
+    echo "已中止，未修改任何文件。"
+    exit 1
+  fi
+fi
+echo
 
 mkdir -p "$TARGET_DIR" "$SCRIPTS_DIR" "$LOGS_DIR"
 cp "$REPO_ROOT/examples/config.example.json" "$CONFIG_PATH"
