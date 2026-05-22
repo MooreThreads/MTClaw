@@ -40,6 +40,39 @@ prompt_required() {
   done
 }
 
+prompt_secret_default() {
+  local prompt_en="$1"
+  local prompt_zh="$2"
+  local default_value="$3"
+  local value
+  printf '%s [%s] (input hidden)\n' "$prompt_en" "$default_value" >&2
+  printf '%s [%s] (输入不显示)\n' "$prompt_zh" "$default_value" >&2
+  read -rs -p "> " value
+  printf '\n' >&2
+  if [ -z "$value" ]; then
+    value="$default_value"
+  fi
+  printf '%s' "$value"
+}
+
+prompt_secret_required() {
+  local prompt_en="$1"
+  local prompt_zh="$2"
+  local value
+  while true; do
+    printf '%s (input hidden)\n' "$prompt_en" >&2
+    printf '%s (输入不显示)\n' "$prompt_zh" >&2
+    read -rs -p "> " value
+    printf '\n' >&2
+    if [ -n "$value" ]; then
+      printf '%s' "$value"
+      return 0
+    fi
+    echo "This field is required."
+    echo "此项必填。"
+  done
+}
+
 prompt_yes_no() {
   local prompt_en="$1"
   local prompt_zh="$2"
@@ -219,7 +252,7 @@ echo "── Routing model (local tool-calling model) ──"
 echo "── 路由模型（本地工具调用模型） ──"
 ROUTING_BASE_URL=$(prompt_default "  Base URL (OpenAI-compatible endpoint)" "  基础地址（兼容 OpenAI 的端点）" "https://api.example.com/v1")
 ROUTING_MODEL=$(prompt_default "  Model name" "  模型名" "your-tool-calling-model")
-ROUTING_API_KEY=$(prompt_default "  API key (use 'any' if no auth needed)" "  API key（如果不需要鉴权可填 any）" "${ROUTING_API_KEY:-any}")
+ROUTING_API_KEY=$(prompt_secret_default "  API key (use 'any' if no auth needed)" "  API key（如果不需要鉴权可填 any）" "${ROUTING_API_KEY:-any}")
 
 echo
 if [ "$USE_OPENCLAW_DEFAULT" = "yes" ]; then
@@ -238,13 +271,13 @@ if [ "$USE_OPENCLAW_DEFAULT" = "yes" ]; then
     echo "  API key: preserved from existing config"
     echo "  API 密钥: 已沿用现有配置"
   else
-    UPSTREAM_API_KEY=$(prompt_required "  API key" "  API 密钥")
+    UPSTREAM_API_KEY=$(prompt_secret_required "  API key" "  API 密钥")
   fi
 else
   echo "── Upstream LLM (main response model) ──"
   echo "── 上游大模型（主回复模型） ──"
   UPSTREAM_BASE_URL=$(prompt_default "  Base URL" "  基础地址" "$DEFAULT_UPSTREAM_BASE_URL")
-  UPSTREAM_API_KEY=$(prompt_required "  API key" "  API 密钥")
+  UPSTREAM_API_KEY=$(prompt_secret_required "  API key" "  API 密钥")
   UPSTREAM_MODEL=$(prompt_default "  Model name" "  模型名" "$DEFAULT_UPSTREAM_MODEL")
 fi
 
