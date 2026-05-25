@@ -326,6 +326,16 @@ ROUTING_MODEL=$(prompt_default "  Model name" "  模型名" "your-tool-calling-m
 ROUTING_API_KEY=$(prompt_default "  API key (use 'any' if no auth needed)" "  API key（如果不需要鉴权可填 any）" "${ROUTING_API_KEY:-any}")
 
 echo
+if ! probe_model_endpoint "Routing" "$ROUTING_BASE_URL" "$ROUTING_API_KEY" "$ROUTING_MODEL" 1; then
+  CONTINUE_ANYWAY=$(prompt_yes_no "Routing model check failed. Continue install anyway?" "路由模型检测失败，是否仍要继续安装？" "N")
+  if [ "$CONTINUE_ANYWAY" != "yes" ]; then
+    echo "Aborted. No files were modified."
+    echo "已中止，未修改任何文件。"
+    exit 1
+  fi
+fi
+
+echo
 if [ "$USE_OPENCLAW_DEFAULT" = "yes" ]; then
   echo "── Upstream LLM (main response model) ──"
   echo "── 上游大模型（主回复模型） ──"
@@ -353,6 +363,16 @@ else
 fi
 
 echo
+if ! probe_model_endpoint "Upstream" "$UPSTREAM_BASE_URL" "$UPSTREAM_API_KEY" "$UPSTREAM_MODEL" 0; then
+  CONTINUE_ANYWAY=$(prompt_yes_no "Upstream model check failed. Continue install anyway?" "上游模型检测失败，是否仍要继续安装？" "N")
+  if [ "$CONTINUE_ANYWAY" != "yes" ]; then
+    echo "Aborted. No files were modified."
+    echo "已中止，未修改任何文件。"
+    exit 1
+  fi
+fi
+
+echo
 
 echo "── General ──"
 echo "── 通用配置 ──"
@@ -371,22 +391,6 @@ echo "  示例值: /home/mt/tools"
 TOOLS_BASE_DIR=$(prompt_default "  Tools base directory" "  工具根目录" "$HOME/.function-router/scripts")
 OPENCLAW_CONFIG=$(prompt_default "  OpenClaw config path" "  OpenClaw 配置路径" "$DEFAULT_OPENCLAW_CONFIG")
 
-echo
-echo "── Verifying model endpoints / 验证模型连通性 ──"
-ROUTING_OK=1
-UPSTREAM_OK=1
-probe_model_endpoint "Routing" "$ROUTING_BASE_URL" "$ROUTING_API_KEY" "$ROUTING_MODEL" 1 || ROUTING_OK=0
-probe_model_endpoint "Upstream" "$UPSTREAM_BASE_URL" "$UPSTREAM_API_KEY" "$UPSTREAM_MODEL" 0 || UPSTREAM_OK=0
-
-if [ "$ROUTING_OK" -ne 1 ] || [ "$UPSTREAM_OK" -ne 1 ]; then
-  echo
-  CONTINUE_ANYWAY=$(prompt_yes_no "One or more model checks failed. Continue install anyway?" "一个或多个模型检测失败，是否仍要继续安装？" "N")
-  if [ "$CONTINUE_ANYWAY" != "yes" ]; then
-    echo "Aborted. No files were modified."
-    echo "已中止，未修改任何文件。"
-    exit 1
-  fi
-fi
 echo
 
 mkdir -p "$TARGET_DIR" "$SCRIPTS_DIR" "$LOGS_DIR"
